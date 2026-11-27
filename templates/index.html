@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>DevOps Manager</title>
+    <style>
+        body { background: #0f172a; color: #e2e8f0;
+               font-family: Arial; margin: 40px; }
+        h1 { color: #38bdf8; }
+        .panel { background: #1e293b; padding: 25px;
+                 border-radius: 12px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left;
+                 border-bottom: 1px solid #334155; }
+        th { color: #38bdf8; }
+        .estado { color: #4ade80; }
+    </style>
+</head>
+<body>
+    <h1>DevOps Manager</h1>
+    <p>Sistema de administracion de infraestructura Cisco</p>
+    <div class="panel">
+        <h2>Dispositivos registrados: {{ total }}</h2>
+    </div>
+    <div class="panel">
+        <h2>Inventario de red</h2>
+        <table>
+            <tr>
+                <th>Equipo</th>
+                <th>Direccion IP</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+            </tr>
+            {% for equipo in dispositivos %}
+            <tr>
+                <td>{{ equipo.nombre }}</td>
+                <td>{{ equipo.ip }}</td>
+                <td>{{ equipo.tipo }}</td>
+                <td class="{{ 'estado' if equipo.estado == 'Reachable' else '' }}">
+                    {{ equipo.estado }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% include "router_panel.html" %}
+</body>
+</html>
