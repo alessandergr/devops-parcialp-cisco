@@ -1,0 +1,32 @@
+<section style="background:#1e293b;padding:24px;margin:24px auto;border-radius:12px;max-width:1100px;color:#e2e8f0;">
+    <h2 style="color:#38bdf8;">Automatizacion de redes Cisco</h2>
+    {% if router %}
+    <p>Router: {{ router.router }} | IP: {{ router.ip }}</p>
+    <p>Interfaces registradas: {{ router.total }}</p>
+    <p>Ultima consulta: {{ router.fecha }}</p>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr>
+                <th>Interfaz</th>
+                <th>Descripcion</th>
+                <th>Metodo</th>
+                <th>Configuracion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for interfaz in router.interfaces %}
+            <tr>
+                <td>{{ interfaz.nombre }}</td>
+                <td>{{ interfaz.descripcion }}</td>
+                <td>{{ interfaz.metodo }}</td>
+                <td style="color:#4ade80;">
+                    {{ 'Habilitada' if interfaz.habilitada else 'Deshabilitada' }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Reporte del router no disponible.</p>
+    {% endif %}
+</section>

@@ -10,7 +10,8 @@ from config import cargar_configuracion, ErrorConfiguracion
 RUTA_PROYECTO = Path(__file__).resolve().parent.parent
 LOGGER = logging.getLogger("devops_parcial.api")
 
-RUTA_TOKEN = "/dna/system/api/v1/auth/token"
+# Rutas de la API de Cisco
+RUTA_TOKEN = "/dna/system/api/v1/auth/token"  # nosec B105: Es una ruta, no una credencial.
 RUTA_INVENTARIO = "/dna/intent/api/v1/network-device"
 
 
@@ -64,6 +65,7 @@ def realizar_solicitud(metodo, ruta, configuracion, **opciones):
     estado = respuesta.status_code
     LOGGER.info("%s %s - HTTP %s", metodo, ruta, estado)
 
+    # Errores HTTP mas comunes de la API
     errores = {
         400: "Solicitud incorrecta.",
         401: "Credenciales o token incorrectos.",
@@ -83,6 +85,7 @@ def realizar_solicitud(metodo, ruta, configuracion, **opciones):
 
         raise ErrorAPI("HTTP {}: {}".format(estado, mensaje))
 
+    # Evitar redirecciones a otros servidores
     if 300 <= estado < 400:
         raise ErrorAPI("Redireccion inesperada: HTTP {}.".format(estado))
 
@@ -135,6 +138,7 @@ def obtener_token(configuracion):
 
 
 def consultar_inventario(configuracion):
+    # Obtener el token antes de consultar los dispositivos
     token = obtener_token(configuracion)
 
     respuesta = realizar_solicitud(
@@ -164,6 +168,7 @@ def consultar_inventario(configuracion):
     return dispositivos
 
 
+# Prueba de conexion sin ingresar al menu principal
 if __name__ == "__main__":
     try:
         configurar_registros()
