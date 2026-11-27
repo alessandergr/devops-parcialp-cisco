@@ -346,7 +346,7 @@ El proyecto utiliza Gitflow para organizar los cambios de cada integrante:
 ### Versiones
 
 - v1.0.0: Inventario de Dispositivos Cisco.
-- v2.0.0: DevOps Manager (en preparación).
+- v2.0.0: DevOps Manager - Automatización de Redes Cisco.
 
 ## 9. Integrantes
 
