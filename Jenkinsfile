@@ -12,8 +12,8 @@ pipeline {
         stage('Codigo fuente') {
             steps {
                 deleteDir()
-                sh 'cp -a /home/jenkins/agent/source/. .'
-                sh 'ls -la'
+                checkout scm
+                sh 'git log -1 --oneline'
             }
         }
 
@@ -78,6 +78,7 @@ pipeline {
                 '''
             }
         }
+
         stage('Despliegue automatico') {
             steps {
                 sh 'sh scripts/desplegar.sh devops-manager:ci-${BUILD_NUMBER}'
@@ -91,7 +92,6 @@ pipeline {
                 '''
             }
         }
-
     }
 
     post {
