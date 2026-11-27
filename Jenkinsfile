@@ -12,8 +12,7 @@ pipeline {
         stage('Codigo fuente') {
             steps {
                 deleteDir()
-                sh 'cp -a /home/jenkins/agent/source/. .'
-                sh 'ls -la'
+                sh 'git log -1 --oneline'
             }
         }
 
