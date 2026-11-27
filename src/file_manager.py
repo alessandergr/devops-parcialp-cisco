@@ -8,6 +8,7 @@ from pathlib import Path
 RUTA_PROYECTO = Path(__file__).resolve().parent.parent
 RUTA_DATOS = RUTA_PROYECTO / "data"
 
+# Campos requeridos en el inventario
 CAMPOS = [
     "id",
     "nombre",
@@ -52,6 +53,7 @@ def escribir_archivo(nombre, funcion_escritura):
     try:
         RUTA_DATOS.mkdir(parents=True, exist_ok=True)
 
+        # Usar un archivo temporal para evitar escrituras incompletas
         descriptor, temporal = tempfile.mkstemp(
             prefix=".devops_",
             suffix=".tmp",
@@ -70,7 +72,7 @@ def escribir_archivo(nombre, funcion_escritura):
         ) as archivo:
             funcion_escritura(archivo)
 
-        os.chmod(temporal, 0o660)
+        os.chmod(temporal, 0o660)  # nosec B103: Escritura autorizada para el grupo netops.
         os.replace(temporal, str(destino))
 
     except (OSError, ValueError, TypeError) as error:
@@ -107,6 +109,7 @@ def guardar_json(inventario):
     return escribir_archivo("inventario.json", escribir)
 
 
+# Evitar que Excel interprete los valores como formulas
 def proteger_valor_csv(valor):
     if valor.lstrip().startswith(("=", "+", "-", "@")):
         return "'" + valor
