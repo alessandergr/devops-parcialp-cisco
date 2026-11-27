@@ -251,7 +251,7 @@ El pipeline realiza las siguientes tareas:
 
 Si la nueva versión no supera la comprobación HTTP, el script desplegar.sh restaura el contenedor anterior.
 
-Durante las pruebas, Jenkins utilizó el código almacenado en el agente local. La conexión directa con GitHub se encuentra en preparación.
+Jenkins obtiene el código directamente del repositorio de GitHub y ejecuta las pruebas, la construcción de la imagen Docker y el despliegue de la aplicación.
 
 La ruta de datos y el grupo Linux utilizados en desplegar.sh corresponden a la configuración de DEVASC y deben revisarse si se trabaja en otro entorno.
 
