@@ -1,0 +1,53 @@
+---
+- name: Verificar estado inicial
+  ios_command:
+    commands:
+      - show ip interface brief
+      - "show running-config | section ^interface {{ interfaz_lab }}$"
+  register: estado_inicial
+
+- name: Mostrar interfaces iniciales
+  debug:
+    var: estado_inicial.stdout_lines[0]
+
+- name: Validar que la interfaz este disponible
+  assert:
+    that:
+      - "estado_inicial.stdout[1] | trim == '' or descripcion_lab in estado_inicial.stdout[1]"
+
+- name: Respaldar configuracion del router
+  ios_config:
+    backup: yes
+    backup_options:
+      dir_path: "{{ lookup('env', 'HOME') }}/.devops-router-backups"
+  no_log: true
+  changed_when: false
+
+- name: Configurar interfaz virtual de laboratorio
+  ios_config:
+    parents: "interface {{ interfaz_lab }}"
+    lines:
+      - "description {{ descripcion_lab }}"
+  register: cambio
+
+- name: Verificar configuracion aplicada
+  ios_command:
+    commands:
+      - "show running-config interface {{ interfaz_lab }}"
+      - show ip interface brief
+  register: resultado
+
+- name: Validar resultado
+  assert:
+    that:
+      - "descripcion_lab in resultado.stdout[0]"
+      - "interfaz_lab in resultado.stdout[1]"
+
+- name: Guardar configuracion validada
+  ios_config:
+    save_when: modified
+  when: cambio.changed
+
+- name: Mostrar resultado final
+  debug:
+    var: resultado.stdout_lines

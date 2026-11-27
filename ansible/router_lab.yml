@@ -1,0 +1,9 @@
+---
+- name: Automatizacion de red Cisco
+  hosts: routers
+  gather_facts: false
+  vars:
+    interfaz_lab: Loopback100
+    descripcion_lab: DEVOPS-MANAGER-LAB
+  roles:
+    - router_lab
