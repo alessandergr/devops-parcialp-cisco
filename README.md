@@ -1,71 +1,52 @@
 # DevOps Manager - Automatización de Redes Cisco
 
-Proyecto desarrollado para el curso **DevOps Fundamentos de IDAT**, utilizando Python, Linux y herramientas de automatización de infraestructura de red.
+Proyecto desarrollado para el curso **DevOps Fundamentos de IDAT**, utilizando Python y Linux en la máquina virtual Cisco DEVASC.
 
-DevOps Manager amplía el sistema de inventario desarrollado en el proyecto parcial, incorporando una interfaz web, monitoreo automático, configuración de routers Cisco, contenedores Docker y un pipeline CI/CD con Jenkins.
+El proyecto parte del sistema de inventario desarrollado en el parcial. Para esta segunda versión se incorporaron herramientas de automatización de redes, monitoreo con Webex, una interfaz web, Docker y Jenkins.
 
 ## 1. Funcionalidades
 
-- Consulta del inventario mediante la API REST de Cisco Catalyst Center.
-- Búsqueda y exportación de dispositivos en formatos JSON y CSV.
-- Control de acceso mediante usuarios, grupos y permisos Linux.
-- Visualización del inventario mediante una interfaz web con Flask.
-- Generación de reportes y envío de alertas a Webex.
-- Monitoreo automático mediante Docker y cron.
+- Consulta de dispositivos mediante la API de Cisco Catalyst Center.
+- Búsqueda y exportación del inventario en JSON y CSV.
+- Control de acceso mediante usuarios y permisos Linux.
+- Visualización del inventario desde una interfaz web.
+- Monitoreo y envío de reportes a Webex.
 - Configuración de routers con Ansible, RESTCONF y NETCONF.
-- Simulación y automatización de redes en Cisco Modeling Labs (CML).
-- Integración y despliegue mediante Jenkins.
-- Pruebas automatizadas, análisis de seguridad y recuperación ante fallos.
+- Simulación y automatización de redes en CML.
+- Pruebas y despliegue automático mediante Jenkins.
 
-## 2. Tecnologías utilizadas
+## 2. Requisitos e instalación
 
-| Tecnología | Uso en el proyecto |
-|---|---|
-| Python | Desarrollo y automatización |
-| Linux | Administración de usuarios y permisos |
-| Cisco Catalyst Center | Consulta de dispositivos de red |
-| Flask | Interfaz web |
-| Webex | Reportes y notificaciones |
-| Docker | Construcción y ejecución de contenedores |
-| Jenkins | Pipeline CI/CD |
-| Ansible | Configuración de routers |
-| RESTCONF | Configuración mediante HTTP y JSON |
-| NETCONF | Configuración mediante SSH y XML |
-| CML | Simulación de redes Cisco |
-| GitHub | Control de versiones |
-| Cron | Programación del monitoreo |
+Para ejecutar el proyecto se necesita:
 
-## 3. Requisitos
-
-- Cisco DEVASC VM con Ubuntu Linux.
+- Cisco DEVASC VM.
 - Python 3.8 para las herramientas locales del laboratorio.
-- Docker para ejecutar la aplicación con Python 3.12.
+- Docker con Python 3.12 dentro de los contenedores.
 - Jenkins y un agente con acceso a Docker.
 - Router Cisco CSR1000v.
-- Acceso a Cisco DevNet Sandbox.
-- Credenciales de Cisco Catalyst Center.
-- Bot y espacio de Webex.
-- Ansible, ncclient y Pexpect para la automatización.
-- Herramientas Linux de administración de permisos y ACL.
+- Ansible, ncclient y Pexpect.
+- Acceso a Cisco DevNet Sandbox y Webex.
+- Herramientas de administración de permisos Linux y ACL.
 
-Las dependencias del archivo requirements.txt se instalan dentro de los contenedores Docker. Las herramientas locales requieren versiones compatibles con el Python de DEVASC.
-
-## 4. Configuración inicial
-
-Acceder a la carpeta del proyecto:
+Clonar el repositorio:
 
 ```bash
+git clone https://github.com/alessandergr/devops-parcialp-cisco.git ~/devops-final
 cd ~/devops-final
 ```
 
-Crear el archivo de configuración si todavía no existe:
+Las dependencias de requirements.txt se instalan al construir las imágenes Docker. Para ejecutar los scripts directamente en DEVASC se deben utilizar dependencias compatibles con su versión de Python.
+
+## 3. Configuración del proyecto
+
+Crear el archivo .env si todavía no existe:
 
 ```bash
 cp -n .env.example .env
 nano .env
 ```
 
-Completar las variables de conexión:
+Completar los datos de conexión:
 
 ```env
 CISCO_BASE_URL=https://sandboxdnac.cisco.com
@@ -79,69 +60,53 @@ WEBEX_BOT_TOKEN=tu_token
 WEBEX_ROOM_NAME=nombre_del_espacio
 ```
 
-Proteger el archivo de credenciales:
+Proteger las credenciales:
 
 ```bash
 chmod 600 .env
 ```
 
-Las credenciales reales no deben almacenarse en GitHub.
-
-## 5. Configuración de usuarios y permisos Linux
-
-Ejecutar el script de configuración:
+Configurar los usuarios, grupos y permisos Linux:
 
 ```bash
 sudo bash scripts/configurar_linux.sh
 ```
 
-El script configura los usuarios, grupos, permisos y listas de control de acceso necesarios para el funcionamiento del proyecto.
-
-### Usuarios del sistema
-
 | Usuario | Permisos principales |
 |---|---|
-| devasc | Actualizar, consultar, buscar, exportar y revisar registros |
+| devasc | Actualizar, consultar, buscar y exportar |
 | adminred | Consultar, buscar, exportar y revisar registros |
-| operador1 | Consultar, buscar y exportar inventarios |
-| auditor1 | Consultar, buscar y revisar registros en modo lectura |
+| operador1 | Consultar, buscar y exportar |
+| auditor1 | Consultar y revisar registros en modo lectura |
 
-Después de generar el inventario y los registros de actividad, comprobar los permisos:
+Las opciones disponibles en la aplicación dependen del usuario que la ejecute. Los cambios de grupos pueden requerir iniciar sesión nuevamente.
 
-```bash
-sudo bash scripts/verificar_permisos.sh
-```
+## 4. Ejecución y monitoreo
 
-Durante las pruebas se obtuvieron 49 verificaciones correctas de seguridad Linux.
+### Menú principal
 
-## 6. Ejecución mediante terminal
-
-Desde el entorno Python compatible de DEVASC:
+Desde el entorno Python local de DEVASC:
 
 ```bash
 python3 src/main.py
 ```
 
-La aplicación mantiene el menú desarrollado en el proyecto parcial.
+Se mantiene el menú del proyecto parcial:
 
 | Opción | Funcionalidad |
 |---|---|
-| 1 | Actualizar el inventario desde Cisco |
-| 2 | Consultar el inventario |
-| 3 | Exportar el inventario a JSON y CSV |
-| 4 | Consultar el resumen del inventario |
-| 5 | Comprobar la conexión con Cisco |
-| 6 | Consultar registros de actividad |
-| 7 | Buscar dispositivos y visualizar detalles |
-| 0 | Salir del programa |
+| 1 | Actualizar inventario desde Cisco |
+| 2 | Consultar inventario |
+| 3 | Exportar JSON y CSV |
+| 4 | Consultar resumen |
+| 5 | Verificar conexión con Cisco |
+| 6 | Consultar registros |
+| 7 | Buscar dispositivos |
+| 0 | Salir |
 
-Las opciones disponibles dependen de los permisos del usuario Linux.
+Se recomienda actualizar primero el inventario desde el usuario devasc.
 
-Para comenzar, se recomienda actualizar el inventario desde la cuenta devasc.
-
-## 7. Construcción y ejecución con Docker
-
-El proyecto utiliza un Dockerfile multietapa para separar la instalación de dependencias del entorno de ejecución.
+### Docker e interfaz web
 
 Construir la imagen:
 
@@ -149,7 +114,7 @@ Construir la imagen:
 docker build -t devops-manager:local .
 ```
 
-Generar el inventario inicial y enviar un reporte a Webex:
+Generar el inventario y enviar un reporte a Webex:
 
 ```bash
 docker run --rm \
@@ -160,7 +125,7 @@ docker run --rm \
   devops-manager:local python src/monitoring.py
 ```
 
-Para el primer despliegue de la aplicación:
+Crear el contenedor de la aplicación:
 
 ```bash
 docker run -d \
@@ -174,34 +139,15 @@ docker run -d \
   devops-manager:local
 ```
 
-Comprobar los contenedores activos:
+Este comando se utiliza para el primer despliegue, cuando todavía no existe el contenedor.
 
-```bash
-docker ps
-```
-
-Este comando de despliegue inicial se utiliza cuando todavía no existe el contenedor devops-manager.
-
-## 8. Interfaz web
-
-Acceder desde el navegador de DEVASC:
+La interfaz web está disponible en:
 
 http://127.0.0.1:8080
 
-La interfaz desarrollada con Flask permite visualizar:
+Desde ella se puede consultar el inventario de Cisco y el último reporte generado del router CSR1000v.
 
-- Cantidad de dispositivos registrados.
-- Nombre, dirección IP y tipo de dispositivo.
-- Estado de conectividad.
-- Interfaces del router CSR1000v.
-- Configuraciones realizadas mediante Ansible, RESTCONF y NETCONF.
-- Fecha del último reporte del router.
-
-El inventario de Catalyst Center y el router CSR1000v corresponden a entornos de laboratorio diferentes.
-
-## 9. Webex y monitoreo automático
-
-El sistema consulta los dispositivos Cisco, genera reportes y los envía mediante un bot de Webex.
+### Monitoreo automático
 
 Para ejecutar el monitoreo manualmente:
 
@@ -209,7 +155,7 @@ Para ejecutar el monitoreo manualmente:
 sh scripts/monitoreo_docker.sh
 ```
 
-Para programar su ejecución:
+Para programar los reportes diarios:
 
 ```bash
 crontab -e
@@ -221,38 +167,21 @@ Agregar la siguiente tarea:
 0 13 * * * /bin/sh /home/devasc/devops-final/scripts/monitoreo_docker.sh >> /home/devasc/devops-final/logs/cron_reportes.log 2>&1
 ```
 
-En el laboratorio, DEVASC utiliza la zona horaria UTC. Por ello, el reporte se encuentra programado para las 8:00 a. m. de Perú.
+El horario corresponde a las 8:00 a. m. de Perú, considerando que DEVASC trabaja en UTC.
 
-El monitoreo requiere que la máquina virtual y Docker se encuentren operativos.
+La máquina virtual y Docker deben estar activos para que se ejecute el monitoreo.
 
-## 10. Automatización del router Cisco
+## 5. Automatización de redes Cisco
 
-Se utilizó un router CSR1000v instalado en VirtualBox y conectado a DEVASC mediante una red de administración.
-
-Configuración utilizada durante las pruebas:
-
-| Parámetro | Valor |
-|---|---|
-| Router | CSR1000v |
-| Dirección IP | 192.168.56.101 |
-| SSH | Puerto 22 |
-| RESTCONF | Puerto 443 |
-| NETCONF | Puerto 830 |
-| Usuario | devops |
-
-Las direcciones IP y los usuarios deben adaptarse al entorno donde se ejecute el proyecto.
+Se utilizó un router CSR1000v instalado en VirtualBox con la dirección IP 192.168.56.101 y acceso mediante SSH, RESTCONF y NETCONF.
 
 ### Ansible
-
-Ejecutar el playbook:
 
 ```bash
 ansible-playbook -i ansible/inventory_lab.ini ansible/router_lab.yml -k
 ```
 
-El playbook verifica el estado inicial, respalda la configuración, crea la interfaz Loopback100 y comprueba los cambios realizados.
-
-También se verificó la idempotencia mediante una segunda ejecución sin cambios adicionales.
+El playbook realiza un respaldo de la configuración, crea Loopback100 y verifica los cambios.
 
 ### RESTCONF
 
@@ -260,13 +189,7 @@ También se verificó la idempotencia mediante una segunda ejecución sin cambio
 python3 src/restconf_client.py
 ```
 
-El script consulta las interfaces mediante solicitudes GET y configura Loopback101 mediante una solicitud PUT con datos JSON basados en el modelo YANG.
-
-Para utilizar un certificado CA de confianza:
-
-```bash
-ROUTER_CA=/ruta/certificado.pem python3 src/restconf_client.py
-```
+Consulta las interfaces del router y configura Loopback101 mediante solicitudes HTTP y datos JSON.
 
 ### NETCONF
 
@@ -274,7 +197,7 @@ ROUTER_CA=/ruta/certificado.pem python3 src/restconf_client.py
 /usr/bin/python3 src/netconf_client.py
 ```
 
-El script establece una conexión NETCONF, bloquea la configuración running, crea Loopback102 mediante XML, verifica el resultado y libera el bloqueo.
+Configura Loopback102 mediante XML y verifica el resultado antes de liberar el bloqueo de la configuración.
 
 ### Reporte del router
 
@@ -282,205 +205,150 @@ El script establece una conexión NETCONF, bloquea la configuración running, cr
 /usr/bin/python3 src/router_report.py
 ```
 
-Genera el archivo data/router.json, utilizado por la interfaz web para mostrar las interfaces configuradas.
+Genera el archivo data/router.json que utiliza la interfaz web.
 
-Este reporte se actualiza al ejecutar el script. No corresponde a una consulta en tiempo real.
+### Cisco Modeling Labs (CML)
 
-## 11. Cisco Modeling Labs (CML)
+Se creó una topología con dos routers conectados entre sí:
 
-Se creó una topología personalizada denominada DEVOPS-MANAGER-LAB.
-
-| Equipo | Modelo | Dirección IP |
+| Router | Modelo | Dirección IP |
 |---|---|---|
-| R1 | Cisco CAT8000V | 10.10.10.1/30 |
-| R2 | Cisco IOSv | 10.10.10.2/30 |
+| R1 | CAT8000V | 10.10.10.1/30 |
+| R2 | IOSv | 10.10.10.2/30 |
 
-Topología:
-
-```text
-R1 (CAT8000V)                  R2 (IOSv)
-10.10.10.1/30                  10.10.10.2/30
-     G1 --------------------------- G0/0
-```
-
-La automatización se realizó desde DEVASC mediante una conexión VPN al sandbox de Cisco y acceso SSH al servidor de consolas de CML.
-
-```bash
-/usr/bin/python3 scripts/cml_automation.py
-```
-
-El script crea Loopback110 en R1, verifica la configuración, comprueba la conectividad con R2 y guarda los cambios.
-
-### Recuperación del laboratorio
-
-El archivo de topología se encuentra en:
+El archivo de la topología se encuentra en:
 
 ```text
 cml/DEVOPS-MANAGER-LAB.yaml
 ```
 
-Para recuperar el laboratorio:
+Para utilizarlo, importar el archivo desde CML e iniciar los routers.
 
-1. Acceder a Cisco Modeling Labs.
-2. Seleccionar la opción Import.
-3. Cargar el archivo YAML.
-4. Iniciar los routers.
-5. Verificar las interfaces y la conectividad.
-
-La importación y recuperación de la topología fueron comprobadas exitosamente.
-
-Para utilizar el script en una nueva reserva, se debe actualizar la dirección del servidor CML y utilizar las credenciales correspondientes.
-
-## 12. Pipeline CI/CD con Jenkins
-
-El pipeline automatiza las siguientes etapas:
-
-1. Obtención del código fuente.
-2. Construcción del entorno de pruebas.
-3. Ejecución de pruebas unitarias.
-4. Análisis estático con Bandit.
-5. Auditoría de dependencias con pip-audit.
-6. Construcción de la imagen Docker.
-7. Escaneo de vulnerabilidades con Trivy.
-8. Detección de secretos en la imagen.
-9. Despliegue automático.
-10. Verificación del servicio mediante HTTP.
-
-El archivo Jenkinsfile contiene la definición del pipeline.
-
-Durante las pruebas realizadas en DEVASC, Jenkins obtuvo el código desde una carpeta local del agente. La integración con el repositorio GitHub se encuentra en preparación.
-
-El script de despliegue utiliza la ruta /home/devasc/devops-final/data y el identificador de grupo 1001 del laboratorio. Estos valores deben revisarse si se utiliza otro entorno.
-
-### Recuperación ante fallos
-
-El script scripts/desplegar.sh conserva la versión anterior del contenedor antes de desplegar una nueva imagen.
-
-Si la nueva versión no supera la comprobación HTTP, se restaura automáticamente el contenedor anterior.
-
-Este procedimiento fue probado en un entorno aislado sin afectar la aplicación principal.
-
-## 13. Seguridad del proyecto
-
-Se aplicaron las siguientes medidas:
-
-- Control de acceso mediante usuarios y grupos Linux.
-- Permisos y listas ACL sobre archivos y directorios.
-- Protección de credenciales mediante archivos de entorno.
-- Contenedores ejecutados sin privilegios de administrador.
-- Eliminación de capacidades adicionales del contenedor.
-- Restricción del acceso web a la máquina local.
-- Verificación de claves SSH para las conexiones automatizadas.
-- Análisis de código, dependencias e imágenes Docker.
-
-### Certificados TLS
-
-Durante las pruebas se encontraron certificados no reconocidos en los entornos Cisco de laboratorio.
-
-Para Catalyst Center se utilizó temporalmente:
-
-```env
-CISCO_VERIFY_TLS=false
-```
-
-Para RESTCONF en el router local:
+La automatización se ejecuta desde DEVASC mediante una conexión VPN al Sandbox de Cisco:
 
 ```bash
-ROUTER_LAB_TLS=1 python3 src/restconf_client.py
+/usr/bin/python3 scripts/cml_automation.py
 ```
 
-También se utilizó una excepción TLS temporal para exportar la topología mediante la API de CML.
+El script configura Loopback110 en R1 y comprueba la comunicación con R2.
 
-Estas excepciones desactivan la comprobación de identidad del servidor y se utilizaron únicamente dentro de los laboratorios autorizados.
+Las direcciones IP y los datos de acceso deben adaptarse al laboratorio utilizado. En una nueva reserva de CML se debe verificar la clave SSH del servidor y actualizar su dirección en el script.
 
-En producción se deben utilizar certificados de confianza y mantener activa la validación TLS.
+## 6. Pipeline CI/CD con Jenkins
 
-El agente Jenkins tiene acceso al socket de Docker, por lo que debe utilizarse únicamente con código y usuarios autorizados.
+El archivo Jenkinsfile contiene las etapas de integración y despliegue del proyecto.
 
-## 14. Pruebas y resultados
+El pipeline realiza las siguientes tareas:
 
-Ejecutar las pruebas unitarias dentro de Docker:
+- Obtención del código fuente.
+- Construcción del entorno de pruebas.
+- Ejecución de pruebas unitarias.
+- Análisis de código con Bandit.
+- Revisión de dependencias con pip-audit.
+- Construcción de la imagen Docker.
+- Escaneo de vulnerabilidades y secretos con Trivy.
+- Despliegue y comprobación del servicio web.
+
+Si la nueva versión no supera la comprobación HTTP, el script desplegar.sh restaura el contenedor anterior.
+
+Durante las pruebas, Jenkins utilizó el código almacenado en el agente local. La conexión directa con GitHub se encuentra en preparación.
+
+La ruta de datos y el grupo Linux utilizados en desplegar.sh corresponden a la configuración de DEVASC y deben revisarse si se trabaja en otro entorno.
+
+## 7. Seguridad y pruebas
+
+Las credenciales se almacenan en .env y los datos y registros se generan localmente. Estos archivos no se incluyen en el repositorio.
+
+Para ejecutar las pruebas unitarias:
 
 ```bash
 docker build -f Dockerfile.ci -t devops-manager-ci .
 docker run --rm devops-manager-ci
 ```
 
-Resultados obtenidos durante las pruebas del laboratorio:
+Después de generar el inventario y los registros, verificar los permisos Linux:
+
+```bash
+sudo bash scripts/verificar_permisos.sh
+```
+
+### Resultados obtenidos
 
 | Prueba | Resultado |
 |---|---|
-| Consulta de Catalyst Center | 4 dispositivos obtenidos |
+| Inventario Cisco | 4 dispositivos |
 | Pruebas unitarias | 37 correctas |
-| Seguridad Linux | 49 verificaciones correctas |
-| Bandit | Sin hallazgos pendientes en el alcance analizado |
-| pip-audit | Sin vulnerabilidades conocidas detectadas |
-| Trivy | Sin vulnerabilidades HIGH o CRITICAL detectadas |
+| Permisos Linux | 49 verificaciones correctas |
+| Análisis estático y dependencias | Sin hallazgos pendientes |
+| Trivy | 0 vulnerabilidades HIGH y CRITICAL detectadas |
 | Despliegue Jenkins | Exitoso |
-| Verificación web | HTTP 200 |
+| Servicio web | HTTP 200 |
 | Reportes Webex | Envío exitoso |
-| Ansible | Configuración e idempotencia verificadas |
-| RESTCONF | Configuración validada |
-| NETCONF | Configuración validada |
-| Conectividad CML | 100% de respuestas |
-| Recuperación CML | Exitosa |
+| Ansible, RESTCONF y NETCONF | Configuraciones verificadas |
+| Conectividad CML | 100% |
+| Recuperación de la topología | Exitosa |
 | Rollback Docker | Exitoso |
 
-Los resultados de seguridad corresponden a las versiones y condiciones del momento de las pruebas.
+Los resultados corresponden a las pruebas realizadas en nuestro laboratorio.
 
-## 15. Archivos generados
+### Nota sobre los certificados TLS
 
-| Archivo | Descripción |
-|---|---|
-| data/inventario.json | Inventario de dispositivos |
-| data/inventario.csv | Inventario en formato CSV |
-| data/router.json | Reporte de interfaces del router |
-| data/reportes/ | Reportes de monitoreo |
-| logs/app.log | Registro de actividad |
-| logs/cron_reportes.log | Registro del monitoreo programado |
+Durante las pruebas se encontraron problemas de validación de certificados en los laboratorios Cisco.
 
-Los datos, registros y credenciales se generan o configuran localmente y no se almacenan en el repositorio público.
+Para Catalyst Center se utilizó:
 
-## 16. Estructura del proyecto
+```env
+CISCO_VERIFY_TLS=false
+```
+
+Para RESTCONF:
+
+```bash
+ROUTER_LAB_TLS=1 python3 src/restconf_client.py
+```
+
+También se utilizó una excepción temporal al exportar la topología mediante la API de CML.
+
+Estas opciones desactivan la validación de identidad del servidor. Solo se utilizaron en el laboratorio. En otros entornos se deben utilizar certificados de confianza y mantener activa la verificación TLS.
+
+El acceso al socket de Docker desde Jenkins debe limitarse a usuarios y código autorizados.
+
+## 8. Estructura y control de versiones
 
 ```text
 devops-final/
-├── ansible/             # Inventario, playbook y roles
-├── cml/                 # Topología virtual Cisco
-├── scripts/             # Administración y automatización
-├── src/                 # Módulos Python
-├── templates/           # Interfaz web
-├── tests/               # Pruebas unitarias
-├── data/                # Datos generados localmente
-├── logs/                # Registros locales
-├── app.py               # Aplicación Flask
-├── Dockerfile           # Imagen de la aplicación
-├── Dockerfile.ci        # Entorno de pruebas
-├── Jenkinsfile          # Pipeline CI/CD
-├── .dockerignore        # Exclusiones de Docker
-├── .gitignore           # Archivos ignorados por Git
-├── .env.example         # Plantilla de credenciales
-├── requirements.txt     # Dependencias
-└── README.md            # Documentación del proyecto
+├── ansible/           # Playbook, inventario y roles
+├── cml/               # Topología de red
+├── scripts/           # Scripts de automatización
+├── src/               # Código Python
+├── templates/         # Interfaz web
+├── tests/             # Pruebas unitarias
+├── data/              # Datos generados localmente
+├── logs/              # Registros locales
+├── app.py             # Aplicación Flask
+├── Dockerfile
+├── Dockerfile.ci
+├── Jenkinsfile
+├── .dockerignore
+├── .gitignore
+├── .env.example
+├── requirements.txt
+└── README.md
 ```
 
-## 17. Control de versiones - Gitflow
-
-El desarrollo se organiza mediante las siguientes ramas:
+El proyecto utiliza Gitflow para organizar los cambios de cada integrante:
 
 - main: versiones estables.
-- develop: integración de funcionalidades.
+- develop: integración de cambios.
 - feature/: desarrollo de funcionalidades.
-- release/: preparación de versiones finales.
-
-Los cambios se integran mediante Pull Requests, conservando el historial del proyecto parcial.
+- release/: preparación de versiones.
 
 ### Versiones
 
 - v1.0.0: Inventario de Dispositivos Cisco.
-- v2.0.0: DevOps Manager - Automatización de Redes Cisco (en preparación).
+- v2.0.0: DevOps Manager (en preparación).
 
-## 18. Integrantes
+## 9. Integrantes
 
 - Salvinia Palomino Ochoa
 - Daniel Alessander Guillén Rios
@@ -490,4 +358,4 @@ Los cambios se integran mediante Pull Requests, conservando el historial del pro
 
 ---
 
-Proyecto académico - DevOps Fundamentos - IDAT 2026.
+IDAT - DevOps Fundamentos - 2026.
